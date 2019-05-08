@@ -11,178 +11,166 @@ import {
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
+// import ImagePicker from 'react-native-image-picker';
+import { ImagePicker, Permissions, Video } from 'expo';
+// import Video from 'react-native-video';
+
+
+
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
+  static srcOptions = {
+    mediaTypes: 'Videos',
+    allowsEditing: true,
+  };
+
+  constructor(props) {
+    super(props);
+    this.state = { videoSrc: null,
+        isSourceSelect: false,
+        isVideoPaused: true, };
+    }
+
+  componentWillMount()
+    {
+
+      this.setState({
+        videoSrc: null,
+        isSourceSelect: false,
+        isVideoPaused: true,
+      });
+
+    }
+
+    useCameraHandler = async () => {
+
+    await this.askPermissionsAsync();
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        mediaTypes:ImagePicker.MediaTypeOptions.Videos,
+        base64: false,
+    });
+    console.log(result);
+    if (!result.cancelled) {
+        this.setState({
+        videoSrc: result.uri,
+        isSourceSelect: true,
+      });
+
+    }
+
+};
+
+askPermissionsAsync = async () => {
+      await Permissions.askAsync(Permissions.CAMERA);
+      await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      };
+
+
+
   render() {
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
+      <View style={styles.mainContainer}>
+        <View style={styles.titleContainer}>
+          <TouchableOpacity style={{justifyContent: 'center'}}>
+            <Text>Title</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.imageContainer}>
+          <TouchableOpacity style={{justifyContent: 'center', flex:1}} disabled={!this.state.isSourceSelect} onPress={() => {this._pauseVideo()}}>
+            {this._displayVideo()}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
+          <View style={{justifyContent: 'center', alignItems:'center', flex:2}} >
+            <TouchableOpacity onPress={() => {this._pickImage()}}>
+              <Text>Select Video</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
+          <View style={{justifyContent: 'center', flex:1, flexDirection:'row'}} >
+            <View style={{justifyContent: 'center', flex:5,}}>
+              
+            </View>
+            <TouchableOpacity style={{justifyContent: 'center', flex:1}} onPress={() => {this._pickImage()}} disabled={!this.state.isSourceSelect}>
+              <Text>Next</Text>
+            </TouchableOpacity>
           </View>
         </View>
+
       </View>
     );
   }
 
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
 
-      return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
+  _displayVideo()
+  {
+    if (this.state.isSourceSelect)
+    {
+      return(
+            <Video
+              source={{ uri: this.state.videoSrc}}
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              resizeMode="contain"
+              shouldPlay={this.state.isVideoPaused}
+              isLooping
+              style={{flex:1}}
+            />
       );
     }
   }
 
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
+  _pauseVideo = async () =>
+  {
+      if(this.state.isVideoPaused)
+      {
+        this.setState({isVideoPaused:false});
+      }else
+      {
+        this.setState({isVideoPaused:true});
+      }
+  }
 
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
+  _pickImage = async () => {
+     this.useCameraHandler();
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({ avatarSource: result.uri });
+    }
   };
 }
 
+
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
     backgroundColor: '#fff',
+    justifyContent: 'center',
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center',
+  titleContainer: {
+    flex: 3,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
   },
-  contentContainer: {
-    paddingTop: 30,
+  imageContainer: {
+    flex: 4,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
   },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50,
-  },
-  homeScreenFilename: {
-    marginVertical: 7,
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4,
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
-  },
-  navigationFilename: {
-    marginTop: 5,
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center',
-  },
-  helpLink: {
-    paddingVertical: 15,
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+  buttonContainer: {
+    flex: 2,
+    flexDirection: 'column',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
   },
 });

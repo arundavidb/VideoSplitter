@@ -13,8 +13,12 @@
   "dependencies": {
     "@expo/samples": "2.1.1",
     "expo": "^32.0.0",
+    "expo-permissions": "^4.0.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
+    "react-native-ffmpeg": "^0.3.2",
+    "react-native-image-picker": "^0.28.1",
+    "react-native-video": "^4.4.1",
     "react-navigation": "^3.0.9"
   },
   "devDependencies": {
