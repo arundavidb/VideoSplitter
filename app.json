@@ -1,35 +1,4 @@
 {
-  "expo": {
-    "name": "VideoSplitter",
-    "slug": "VideoSplitter",
-    "privacy": "public",
-    "sdkVersion": "32.0.0",
-    "platforms": [
-      "ios",
-      "android"
-    ],
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-                    "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets.",
-                    "NSPhotoLibraryUsageDescription": "$(PRODUCT_NAME) would like access to your photo gallery",
-                    "NSPhotoLibraryAddUsageDescription": "$(PRODUCT_NAME) would like access to your photo gallery",
-                    "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) would like access to your photo gallery",
-                  },
-    }
-  }
+  "name": "VideoSplitter",
+  "displayName": "VideoSplitter"
 }
